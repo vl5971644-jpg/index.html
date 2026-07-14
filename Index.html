@@ -1,0 +1,78 @@
+const CACHE_NAME = "devany-xv-v1";
+
+const FILES_TO_CACHE = [
+  "/",
+  "/index.html",
+  "/styles.css",
+  "/script.js",
+  "/particles.js",
+  "/carousel.js",
+  "/effects.js",
+  "/manifest.json",
+
+  "/images/foto1.jpg",
+  "/images/foto2.jpg",
+  "/images/foto3.jpg",
+  "/images/foto4.jpg",
+  "/images/foto5.jpg",
+  "/images/foto6.jpg",
+
+  "/audio/cancion.mp3",
+
+  "/icons/icon-192.png",
+  "/icons/icon-512.png"
+];
+
+self.addEventListener("install", event => {
+
+    event.waitUntil(
+
+        caches.open(CACHE_NAME)
+
+        .then(cache => cache.addAll(FILES_TO_CACHE))
+
+    );
+
+});
+
+self.addEventListener("activate", event => {
+
+    event.waitUntil(
+
+        caches.keys().then(keys =>
+
+            Promise.all(
+
+                keys.map(key => {
+
+                    if(key !== CACHE_NAME){
+
+                        return caches.delete(key);
+
+                    }
+
+                })
+
+            )
+
+        )
+
+    );
+
+});
+
+self.addEventListener("fetch", event => {
+
+    event.respondWith(
+
+        caches.match(event.request)
+
+        .then(response => {
+
+            return response || fetch(event.request);
+
+        })
+
+    );
+
+});
